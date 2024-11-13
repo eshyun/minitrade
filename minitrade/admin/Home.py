@@ -35,7 +35,11 @@ def display_process_status():
     st.caption('Processes')
     cmd = 'ps -o pid,ppid,command | grep python | grep minitrade | grep -v grep'
     output = os.popen(cmd).read()
-    pid_map = {pid: name for pid, ppid, _, _, name, *_ in [line.split() for line in output.splitlines()] if ppid == '1'}
+    
+    # eshyun - on Mac, ppid is not 1; checking the process names explicitly
+    # pid_map = {pid: name for pid, ppid, _, _, name, *_ in [line.split() for line in output.splitlines()] if ppid == '1'}
+    pid_map = {pid: name for pid, ppid, _, _, name, *_ in [line.split() for line in output.splitlines()] if name in ['scheduler', 'ib', 'web']}
+
     proc_map = {'scheduler': [], 'ib': [], 'web': []}
     for k, v in pid_map.items():
         proc_map[v] = proc_map.get(v, []) + [k]
